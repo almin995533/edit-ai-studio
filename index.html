@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDIT AI STUDIO — New Stable Build</title>
+<style>
+:root{--bg:#090d18;--panel:#121a2b;--line:#293653;--txt:#f4f6ff;--muted:#9eabc6;--accent:#8b5cf6;--cyan:#22d3ee;--green:#34d399}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#1d1740 0,transparent 35%),var(--bg);color:var(--txt);font:15px system-ui,Arial}.wrap{max-width:1100px;margin:auto;padding:18px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.brand{font-weight:850;font-size:21px}.brand span{color:#b69aff}.tag{font-size:12px;color:#c9baff;border:1px solid #59458a;border-radius:30px;padding:6px 10px}h1{font-size:clamp(26px,5vw,40px);margin:25px 0 5px}.sub{color:var(--muted);margin:0 0 20px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.card{background:linear-gradient(150deg,var(--panel),#101727);border:1px solid var(--line);border-radius:16px;padding:15px;min-width:0}.wide{grid-column:1/-1}.card h2{font-size:16px;margin:0 0 10px}.hint{color:var(--muted);font-size:12px;line-height:1.55}input[type=file],textarea,select{width:100%;background:#0b1220;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px;margin-top:8px}select{min-height:42px}.btn{border:0;border-radius:11px;padding:11px 15px;background:linear-gradient(100deg,var(--accent),#5b7cfa);color:white;font-weight:750;cursor:pointer}.btn:disabled{opacity:.4;cursor:not-allowed}.btn.secondary{background:#26324c;border:1px solid #3a4968}.btn.green{background:linear-gradient(100deg,#059669,#0d9488)}.btn.orange{background:linear-gradient(100deg,#b45309,#d97706)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.stat{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:9px}.stat b{color:white}#thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:7px;margin-top:10px}.thumb{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#0a1020}.thumb img{width:100%;height:65px;object-fit:cover;display:block}.thumb small{display:block;padding:4px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.progress{height:8px;background:#26324a;border-radius:9px;overflow:hidden;margin-top:9px}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--cyan));transition:width .2s}#status{color:#c5d1e8;font-size:13px;margin-top:8px;min-height:20px}.timeline{display:flex;gap:5px;overflow:auto;padding:8px 0}.clip{min-width:92px;max-width:115px;border:1px solid var(--line);border-radius:8px;padding:5px;font-size:10px;color:var(--muted);cursor:pointer}.clip img{width:100%;height:55px;object-fit:cover;border-radius:5px}.clip.active{border-color:#a78bfa;box-shadow:0 0 0 1px #a78bfa}.pill{display:inline-block;background:#17243a;border:1px solid #344664;color:#cbd5e1;border-radius:20px;padding:4px 8px;font-size:10px;margin:3px 3px 0 0}#preview{width:100%;max-height:520px;aspect-ratio:16/9;background:#05070d;border-radius:12px;object-fit:contain}.scene{border-top:1px solid var(--line);padding:8px 0;font-size:12px}.scene b{color:#fff}.scene-editor{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;padding:12px 0;border-top:1px solid var(--line)}.scene-editor img{width:100%;height:86px;object-fit:cover;border-radius:8px}.scene-editor textarea{min-height:78px;resize:vertical;margin:5px 0}.scene-meta{font-size:11px;color:var(--muted)}.scene-editor strong{font-size:13px}@media(max-width:520px){.scene-editor{grid-template-columns:82px minmax(0,1fr)}}.warn{color:#fbbf24}.ok{color:#6ee7b7}.controlgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}label{display:block}.statusbox{padding:10px;border-radius:10px;background:#0b1220;border:1px solid var(--line);margin-top:10px}footer{text-align:center;color:#7786a5;font-size:11px;margin:22px 0}@media(max-width:650px){.wrap{padding:12px}.grid{grid-template-columns:1fr}.wide{grid-column:auto}.card{padding:12px}.controlgrid{grid-template-columns:1fr}}
+</style></head>
+<body><main class="wrap">
+<div class="top"><div class="brand">EDIT <span>AI</span> STUDIO</div><div class="tag">FREE BROWSER EDITOR · NEW BUILD</div></div>
+<h1>Automatic video editing studio</h1><p class="sub">Voiceover transcription → every uploaded image gets its own timed scene → editable scene scripts → optional subtitles → WebM export.</p>
+<div class="grid">
+<section class="card"><h2>01 · Voiceover</h2><div class="hint">Upload a 10–20 minute MP3/WAV/M4A. Audio is played from the file element (not decoded into one huge audio buffer) during export.</div><input id="audioFile" type="file" accept="audio/*"><div class="stat"><span id="audioName">No audio</span><span id="duration">Duration: —</span></div><audio id="audio" controls style="width:100%;margin-top:9px;display:none"></audio></section>
+<section class="card"><h2>02 · Images</h2><div class="hint">Upload JPG/PNG/WEBP. Every selected image will be included exactly once as its own scene. For long projects, 100 images is a practical target on a laptop.</div><input id="imageFiles" type="file" accept="image/*" multiple><div class="stat"><span>Selected: <b id="imageCount">0</b></span><span id="imageAdvice">Waiting for images</span></div><div id="thumbs"></div></section>
+<section class="card wide"><h2>03 · AI analysis & matching</h2><div class="grid">
+<div><label class="hint" for="lang">Transcript language</label><select id="lang"><option value="auto">Auto detect</option><option value="english">English</option><option value="bengali">Bangla</option></select></div>
+<div><label class="hint" for="ratio">Video layout</label><select id="ratio"><option value="16:9">16:9 Landscape</option><option value="9:16">9:16 Vertical</option><option value="1:1">1:1 Square</option></select></div>
+</div><div class="actions"><button class="btn" id="analyze">1. Analyze voice with Whisper</button><button class="btn green" id="match" disabled>2. Add every image to timeline</button></div><div id="status">Upload a voiceover and images to begin.</div><div class="progress"><div class="bar" id="bar"></div></div><div class="stat"><span>Whisper: <b id="whisperState">Not loaded</b></span><span>Image matching: <b>Timeline-based (not semantic)</b></span></div><div id="transcript" class="hint" style="margin-top:10px;white-space:pre-wrap"></div><div id="sceneResults"></div><div class="hint" style="margin-top:14px">প্রতিটি আপলোড করা ছবির জন্য একটি Scene তৈরি হবে। ছবিগুলো সময় অনুযায়ী ভাগ করা হয়—ছবির বিষয়বস্তু বুঝে AI দিয়ে মেলানো হয় না। Video Script বক্সে সম্পাদনা করতে পারবেন।</div><div id="sceneEditors"></div></section>
+<section class="card wide"><h2>04 · Automatic timeline & motion</h2><div class="controlgrid">
+<div><label class="hint" for="transition">Transition</label><select id="transition"><option value="crossfade">Crossfade</option><option value="fade">Fade through black</option><option value="cut">Hard cut</option></select></div>
+<div><label class="hint" for="zoom">Zoom movement</label><select id="zoom"><option value="medium">Medium zoom</option><option value="subtle">Subtle zoom</option><option value="strong">Strong zoom</option><option value="off">No zoom</option></select></div>
+<div><label class="hint" for="subtitle">Subtitles</label><select id="subtitle"><option value="on">Show subtitles</option><option value="off">Hide subtitles</option></select></div>
+</div><div id="timeline" class="timeline"></div><div class="hint">প্রতিটি ছবি একবার করে Timeline-এ থাকবে। Scene-এর সময় Voiceover-এর দৈর্ঘ্য অনুযায়ী ভাগ হবে এবং Script বক্স থেকে সম্পাদনা করা যাবে। Subtitle বন্ধ করলে ভিডিওতে কোনো লেখা দেখাবে না।</div></section>
+<section class="card wide"><h2>05 · Preview & export</h2><canvas id="canvas" width="1920" height="1080" style="display:none"></canvas><video id="preview" controls playsinline></video><div class="actions"><button class="btn" id="render" disabled>Render video with voiceover</button><a id="downloadWebm" class="btn secondary" style="display:none;text-decoration:none" download="EDIT_AI_STUDIO_video.webm">Download WebM</a><button class="btn orange" id="convert" disabled>Convert WebM → MP4 1080p</button><a id="downloadMp4" class="btn green" style="display:none;text-decoration:none" download="EDIT_AI_STUDIO_video.mp4">Download MP4</a></div><div id="exportStatus" class="statusbox hint">Long-project mode: 15 fps, 3 Mbps video, 128 kbps voiceover. WebM chunks are saved locally while recording. 10–20 minute 1080p exports can still require several GB of free disk/RAM. MP4 conversion may fail on long projects; keep WebM as the reliable first export.</div></section>
+</div><footer>No paid API keys. Whisper loads from Hugging Face. Internet is required for the first model download. Image scenes are distributed across the voiceover timeline; this build does not perform semantic image recognition. Long exports are demanding; test with a short project first.</footer>
+</main>
+<script type="module">
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2';
+env.allowLocalModels=false; env.useBrowserCache=true;
+const $=id=>document.getElementById(id);
+let audioFile=null,audioUrl=null,files=[],urls=[],asr=null,scenes=[],resultUrl=null,mp4Url=null,ffmpeg=null;
+const audio=$('audio'),canvas=$('canvas'),ctx=canvas.getContext('2d');
+let imageCache=[];
+function setStatus(t,p=null){$('status').textContent=t;if(p!==null)$('bar').style.width=Math.max(0,Math.min(100,p))+'%'}
+function fmt(s){return isFinite(s)?Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'):'—'}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function clearExports(){if(resultUrl)URL.revokeObjectURL(resultUrl);if(mp4Url)URL.revokeObjectURL(mp4Url);resultUrl=mp4Url=null;$('downloadWebm').style.display='none';$('downloadMp4').style.display='none';$('convert').disabled=true}
+$('audioFile').onchange=e=>{audioFile=e.target.files[0];if(!audioFile)return;if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(audioFile);audio.src=audioUrl;audio.style.display='block';$('audioName').textContent=audioFile.name;audio.onloadedmetadata=()=>{$('duration').textContent='Duration: '+fmt(audio.duration);$('analyze').disabled=false};audio.onerror=()=>{setStatus('অডিও ফাইলটি পড়া যাচ্ছে না। MP3/WAV ফাইল দিয়ে আবার চেষ্টা করুন।')};$('analyze').disabled=true;clearExports();scenes=[];$('match').disabled=true;$('render').disabled=true;$('transcript').textContent='';$('sceneEditors').innerHTML='';$('sceneResults').innerHTML='';$('timeline').innerHTML='';setStatus('অডিওর দৈর্ঘ্য পড়া হচ্ছে…')};
+$('imageFiles').onchange=e=>{urls.forEach(URL.revokeObjectURL);files=[...e.target.files].filter(f=>f.type.startsWith('image/'));urls=files.map(f=>URL.createObjectURL(f));imageCache=[];$('imageCount').textContent=files.length;$('imageAdvice').textContent=files.length>30?'Large set: phone may slow down':'Good for a first test';$('thumbs').innerHTML='';files.forEach((f,i)=>{let d=document.createElement('div');d.className='thumb';d.innerHTML=`<img src="${urls[i]}"><small>${i+1}. ${esc(f.name)}</small>`;$('thumbs').append(d)});$('match').disabled=true;$('render').disabled=true;scenes=[];$('sceneEditors').innerHTML='';$('sceneResults').innerHTML='';$('timeline').innerHTML='';clearExports();setStatus(files.length+' images ready. Analyze voice first.')};
+async function getAudioSamples(file){if(file.size>250*1024*1024)throw new Error('অডিও ফাইল 250 MB-এর বেশি। ছোট/কমপ্রেস করা MP3 দিয়ে চেষ্টা করুন।');const bytes=await file.arrayBuffer();const ac=new (window.AudioContext||window.webkitAudioContext)();let decoded;try{decoded=await ac.decodeAudioData(bytes)}catch(e){await ac.close();throw new Error('অডিও ডিকোড করা যায়নি। MP3 বা WAV ফাইল ব্যবহার করুন।')} const mono=new Float32Array(decoded.length);for(let c=0;c<decoded.numberOfChannels;c++){const data=decoded.getChannelData(c);for(let i=0;i<data.length;i++)mono[i]+=data[i]/decoded.numberOfChannels}const target=16000,outLen=Math.floor(mono.length*target/decoded.sampleRate),out=new Float32Array(outLen),ratio=decoded.sampleRate/target;for(let i=0;i<outLen;i++){const pos=i*ratio,lo=Math.floor(pos),hi=Math.min(lo+1,mono.length-1),f=pos-lo;out[i]=mono[lo]*(1-f)+mono[hi]*f}await ac.close();return out}
+$('analyze').onclick=async()=>{if(!audioFile){setStatus('Please upload a voiceover.');return}if(!Number.isFinite(audio.duration)||audio.duration<=0){setStatus('অডিওর metadata এখনো লোড হয়নি। কয়েক সেকেন্ড অপেক্ষা করুন।');return}try{$('analyze').disabled=true;$('whisperState').textContent='Loading…';setStatus('Loading Whisper model. First run downloads the model.',2);if(!asr)asr=await pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{device:'wasm'});$('whisperState').textContent='Ready';setStatus('অডিও প্রস্তুত করে ট্রান্সক্রিপশন চলছে। দীর্ঘ ফাইলে সময় লাগতে পারে…',12);const samples=await getAudioSamples(audioFile),opts={sampling_rate:16000,return_timestamps:true};const lang=$('lang').value;if(lang!=='auto')opts.language=lang;opts.chunk_length_s=30;opts.stride_length_s=5;const output=await asr(samples,opts);let chunks=output.chunks||[];if(!chunks.length)chunks=[{timestamp:[0,audio.duration||1],text:output.text||''}];const dur=audio.duration||1;scenes=chunks.map((c,i)=>({start:Number(c.timestamp?.[0]??0),end:Number(c.timestamp?.[1]??(i+1)*(dur/chunks.length)),text:(c.text||'').trim(),imageIndex:null,score:0})).filter(s=>s.text);if(!scenes.length)throw new Error('Whisper returned no transcript. Try clearer audio.');scenes.forEach((s,i)=>{s.start=Math.max(0,Math.min(dur,s.start));s.end=Math.max(s.start+0.25,Math.min(dur,s.end));if(i>0&&s.start<scenes[i-1].end)s.start=scenes[i-1].end});$('transcript').textContent='TRANSCRIPT\\n'+scenes.map((s,i)=>`${i+1}. [${fmt(s.start)}–${fmt(s.end)}] ${s.text}`).join('\\n');$('match').disabled=files.length===0;$('render').disabled=true;setStatus(`Voice analysis complete: ${scenes.length} transcript segments.`,100)}catch(e){console.error(e);setStatus('Voice analysis failed: '+(e.message||e)+'. Check audio format, internet and memory.')}finally{$('analyze').disabled=false}};
+
+function buildImageScenes(){
+ const duration=audio.duration||Math.max(1,scenes[scenes.length-1]?.end||1);
+ const transcript=[...scenes];
+ const count=files.length;
+ const imageScenes=[];
+ for(let i=0;i<count;i++){
+  const start=duration*i/count, end=duration*(i+1)/count;
+  const related=transcript.filter(t=>t.end>start && t.start<end);
+  let script=related.map(t=>t.text).join(' ').replace(/\s+/g,' ').trim();
+  if(!script) script=related.length?related[0].text:'';
+  imageScenes.push({start,end,text:script,script,imageIndex:i,score:1});
+ }
+ scenes=imageScenes;
+}
+function renderSceneEditors(){
+ const host=$('sceneEditors'); if(!host)return;
+ host.innerHTML='';
+ scenes.forEach((s,i)=>{
+  const row=document.createElement('div');row.className='scene-editor';
+  const img=document.createElement('img');img.src=urls[s.imageIndex];img.alt='Image '+(i+1);
+  const body=document.createElement('div');
+  const title=document.createElement('strong');title.textContent=`Image ${i+1} · Scene ${i+1}`;
+  const meta=document.createElement('div');meta.className='scene-meta';meta.textContent=`${fmt(s.start)} – ${fmt(s.end)} · ${files[s.imageIndex]?.name||''}`;
+  const label=document.createElement('label');label.className='hint';label.textContent='Video Script / Voiceover segment';
+  const area=document.createElement('textarea');area.value=s.script||'';area.placeholder='এই Scene-এর স্ক্রিপ্ট লিখুন…';
+  area.addEventListener('input',()=>{s.script=area.value;s.text=area.value;});
+  body.append(title,meta,label,area);row.append(img,body);host.append(row);
+ });
+}
+$('match').onclick=async()=>{
+ if(!scenes.length||!files.length)return;
+ try{
+  $('match').disabled=true;$('render').disabled=true;
+  setStatus('প্রতিটি ছবির জন্য Scene তৈরি করা হচ্ছে…',15);
+  buildImageScenes();
+  renderTimeline(0);
+  renderSceneEditors();
+  $('sceneResults').innerHTML='<div class="hint" style="margin:10px 0">প্রতিটি আপলোড করা ছবি Timeline-এ যোগ হয়েছে। কোনো ছবি বাদ দেওয়া হয়নি।</div>'+
+   scenes.map((s,i)=>`<div class="scene"><b>Scene ${i+1}</b> · ${fmt(s.start)}–${fmt(s.end)}<br>${esc(files[s.imageIndex]?.name||'Image')}</div>`).join('');
+  $('render').disabled=false;
+  setStatus(`${files.length}টি ছবির জন্য ${files.length}টি Scene তৈরি হয়েছে। প্রতিটি Script Box সম্পাদনা করতে পারবেন।`,100);
+ }catch(e){console.error(e);setStatus('Scene তৈরি করা যায়নি: '+(e.message||e));}
+ finally{$('match').disabled=false}
+};
+
+function renderTimeline(active=0){
+ $('timeline').innerHTML='';
+ scenes.forEach((s,i)=>{
+  let d=document.createElement('div');d.className='clip'+(i===active?' active':'');
+  d.innerHTML=`<img src="${urls[s.imageIndex]}"><b>Scene ${i+1}</b><br>${fmt(s.start)}–${fmt(s.end)}`;
+  d.onclick=()=>{renderTimeline(i);drawFrame(i,.5,0)};
+  $('timeline').append(d);
+ });
+ if(scenes.length)drawFrame(active,.5,0);
+}
+function dims(){let r=$('ratio').value;return r==='9:16'?[1080,1920]:r==='1:1'?[1080,1080]:[1920,1080]}
+function getImage(i){return new Promise((resolve,reject)=>{if(imageCache[i])return resolve(imageCache[i]);let im=new Image();im.onload=()=>{imageCache[i]=im;resolve(im)};im.onerror=reject;im.src=urls[i]})}
+function drawImageCover(im,progress,alpha=1,zoomMode=$('zoom').value){let w=canvas.width,h=canvas.height,scale=Math.max(w/im.width,h/im.height),sw=w/scale,sh=h/scale;let z=zoomMode==='off'?1:zoomMode==='subtle'?1+0.035*progress:zoomMode==='strong'?1+0.13*progress:1+0.07*progress;sw/=z;sh/=z;ctx.save();ctx.globalAlpha=alpha;ctx.drawImage(im,(im.width-sw)/2,(im.height-sh)/2,sw,sh,0,0,w,h);ctx.restore()}
+function drawCaption(text){if($('subtitle').value==='off'||!text)return;let w=canvas.width,h=canvas.height,font=Math.max(24,Math.round(w*.026)),maxW=w*.88;ctx.save();ctx.font=`bold ${font}px Arial,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';let words=text.split(/\s+/),lines=[],line='';for(let word of words){let test=line?line+' '+word:word;if(ctx.measureText(test).width>maxW&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);lines=lines.slice(-3);let lineH=font*1.25,y=h*.86-(lines.length-1)*lineH/2;ctx.fillStyle='rgba(0,0,0,.58)';let widths=lines.map(x=>ctx.measureText(x).width),boxW=Math.min(maxW,Math.max(...widths)+font),boxH=lines.length*lineH+font*.5;ctx.fillRect((w-boxW)/2,y-boxH/2,w?boxW:0,boxH);ctx.lineWidth=Math.max(2,font*.09);ctx.strokeStyle='#000';ctx.fillStyle='#fff';lines.forEach((l,i)=>{ctx.strokeText(l,w/2,y+(i-(lines.length-1)/2)*lineH,maxW);ctx.fillText(l,w/2,y+(i-(lines.length-1)/2)*lineH,maxW)});ctx.restore()}
+async function drawFrame(index,progress,transitionProgress=0){const s=scenes[index];if(!s)return;ctx.fillStyle='#05070d';ctx.fillRect(0,0,canvas.width,canvas.height);const im=await getImage(s.imageIndex);let trans=$('transition').value;if(transitionProgress>0&&index>0&&trans!=='cut'){if(trans==='crossfade'){const prev=await getImage(scenes[index-1].imageIndex);drawImageCover(prev,1,1-transitionProgress);drawImageCover(im,progress,transitionProgress)}else{drawImageCover(im,progress,transitionProgress>0.5?1:(transitionProgress*2));}}else drawImageCover(im,progress);drawCaption(s.script ?? s.text)}
+$('subtitle').onchange=()=>{if(scenes.length){const t=Math.max(0,audio.currentTime||0);let i=scenes.findIndex(s=>t>=s.start&&t<s.end);if(i<0)i=0;drawFrame(i,.5,0)}};
+$('ratio').onchange=()=>{if(scenes.length){let [w,h]=dims();canvas.width=w;canvas.height=h;renderTimeline()}};
+// Long-project renderer: stream the uploaded audio element, record at 15 fps,
+// and persist small MediaRecorder chunks in IndexedDB instead of holding decoded audio.
+let renderAudioContext=null,renderAudioSource=null,renderDestination=null;
+function openChunkDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open('edit-ai-studio-render',1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('chunks'))req.result.createObjectStore('chunks',{autoIncrement:true})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+function clearChunkDB(db){return new Promise((resolve,reject)=>{const tx=db.transaction('chunks','readwrite');tx.objectStore('chunks').clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}
+function saveChunk(db,blob){return new Promise((resolve,reject)=>{const tx=db.transaction('chunks','readwrite');tx.objectStore('chunks').add(blob);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}
+function readChunks(db){return new Promise((resolve,reject)=>{const tx=db.transaction('chunks','readonly'),req=tx.objectStore('chunks').getAll();req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+$('render').onclick=async()=>{
+ if(!scenes.length||!audioFile)return;
+ if(scenes.length!==files.length || scenes.some((s,i)=>s.imageIndex!==i)){setStatus('প্রতিটি ছবি Timeline-এ যোগ হয়নি। আবার Add every image to timeline চাপুন।');return;}
+ clearExports();$('render').disabled=true;$('convert').disabled=true;
+ let db=null,videoStream=null,rec=null,raf=0,stopPromise=null,lastScene=-1,renderFailed=null,pendingWrites=[],finishPlayback=null;
+ try{
+  const [w,h]=dims();canvas.width=w;canvas.height=h;
+  if(!audio.duration||!Number.isFinite(audio.duration))throw new Error('অডিওর দৈর্ঘ্য পাওয়া যায়নি। MP3 আবার আপলোড করুন।');
+  if(!window.MediaRecorder||!canvas.captureStream)throw new Error('এই ব্রাউজারে WebM recording নেই। Chrome বা Edge-এর নতুন সংস্করণ ব্যবহার করুন।');
+  db=await openChunkDB();await clearChunkDB(db);
+  if(!renderAudioContext){renderAudioContext=new (window.AudioContext||window.webkitAudioContext)();renderAudioSource=renderAudioContext.createMediaElementSource(audio);renderAudioSource.connect(renderAudioContext.destination)}
+  if(renderDestination){try{renderAudioSource.disconnect(renderDestination)}catch{}}renderDestination=renderAudioContext.createMediaStreamDestination();renderAudioSource.connect(renderDestination);
+  await renderAudioContext.resume();
+  videoStream=canvas.captureStream(15);
+  const combined=new MediaStream([...videoStream.getVideoTracks(),...renderDestination.stream.getAudioTracks()]);
+  const mime=['video/webm;codecs=vp8,opus','video/webm'].find(t=>MediaRecorder.isTypeSupported(t));
+  if(!mime)throw new Error('WebM export সমর্থিত নয়। Chrome/Edge আপডেট করুন।');
+  rec=new MediaRecorder(combined,{mimeType:mime,videoBitsPerSecond:3000000,audioBitsPerSecond:128000});
+  stopPromise=new Promise((resolve,reject)=>{rec.onerror=e=>reject(e.error||new Error('MediaRecorder error'));rec.onstop=resolve});
+  let chunkCount=0;
+  rec.ondataavailable=e=>{if(e.data&&e.data.size){const job=saveChunk(db,e.data).then(()=>{chunkCount++}).catch(err=>{renderFailed=err;audio.pause();if(rec.state==='recording')rec.stop();if(finishPlayback)finishPlayback()});pendingWrites.push(job)}};
+  $('exportStatus').textContent='Long render started. Recording 1080p at 15 fps; saving small chunks locally. Keep this tab open and do not switch off the laptop.';
+  audio.pause();audio.currentTime=0;
+  await drawFrame(0,0,0);
+  rec.start(2000);
+  await audio.play();
+  const tick=async()=>{
+   if(!rec||rec.state!=='recording')return;
+   const t=audio.currentTime,duration=audio.duration;
+   let idx=scenes.findIndex((s,i)=>t>=s.start&&(t<s.end||i===scenes.length-1));
+   if(idx<0)idx=t<scenes[0].start?0:scenes.length-1;
+   const s=scenes[idx],span=Math.max(.25,s.end-s.start),p=Math.max(0,Math.min(1,(t-s.start)/span));
+   const fade=Math.min(.45,span*.18),tp=(idx>0&&t-s.start<fade)?(t-s.start)/fade:0;
+   if(idx!==lastScene){lastScene=idx;renderTimeline(idx)}
+   try{await drawFrame(idx,p,tp)}catch(e){renderFailed=e;audio.pause();if(rec.state==='recording')rec.stop();if(finishPlayback)finishPlayback();return}
+   setStatus(`Rendering ${fmt(t)} / ${fmt(duration)} · ${Math.round(t/duration*100)}%`,t/duration*100);
+   if(!audio.ended&&!audio.paused)raf=requestAnimationFrame(tick);
+  };
+  await new Promise(resolve=>{finishPlayback=resolve;audio.addEventListener('ended',resolve,{once:true});raf=requestAnimationFrame(tick)});
+  cancelAnimationFrame(raf);if(rec.state==='recording')rec.stop();await stopPromise;await Promise.all(pendingWrites);
+  if(renderFailed)throw renderFailed;
+  const parts=await readChunks(db);if(!parts.length||!chunkCount)throw new Error('ভিডিওর কোনো ডেটা রেকর্ড হয়নি। আবার চেষ্টা করুন।');
+  resultUrl=URL.createObjectURL(new Blob(parts,{type:mime}));
+  $('preview').src=resultUrl;$('preview').load();$('downloadWebm').href=resultUrl;$('downloadWebm').style.display='inline-block';$('convert').disabled=false;
+  $('exportStatus').textContent=`Render complete. ${chunkCount} ছোট chunk থেকে WebM তৈরি হয়েছে। প্রথমে WebM ডাউনলোড করুন; MP4 conversion দীর্ঘ ভিডিওতে RAM-এর কারণে ব্যর্থ হতে পারে.`;
+  setStatus('Render complete. Voiceover সহ WebM তৈরি হয়েছে।',100);
+ }catch(e){console.error(e);try{if(rec&&rec.state==='recording')rec.stop()}catch{}setStatus('Render failed: '+(e.message||e),0);$('exportStatus').textContent='Render failed. Laptop-এ পর্যাপ্ত RAM/disk space আছে কি না দেখুন; browser tab খোলা রাখুন এবং আবার চেষ্টা করুন.'}
+ finally{cancelAnimationFrame(raf);if(audio)audio.pause();if(videoStream)videoStream.getTracks().forEach(t=>t.stop());if(db)db.close();$('render').disabled=false}
+};
+$('convert').onclick=async()=>{if(!resultUrl)return;const btn=$('convert');btn.disabled=true;$('exportStatus').textContent='Loading FFmpeg.wasm. This downloads a sizeable free video encoder; keep this tab open.';try{if(!ffmpeg){const {FFmpeg}=await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js');const {toBlobURL}=await import('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js');ffmpeg=new FFmpeg();ffmpeg.on('progress',({progress})=>{$('exportStatus').textContent='MP4 encoding: '+Math.round(progress*100)+'%'});const base='https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd';await ffmpeg.load({coreURL:await toBlobURL(base+'/ffmpeg-core.js','text/javascript'),wasmURL:await toBlobURL(base+'/ffmpeg-core.wasm','application/wasm')})}const input=await (await fetch(resultUrl)).arrayBuffer();await ffmpeg.writeFile('input.webm',new Uint8Array(input));$('exportStatus').textContent='Encoding H.264 MP4 at 1080p…';const [w,h]=dims();await ffmpeg.exec(['-i','input.webm','-vf',`scale=${w}:${h}:flags=lanczos`,'-c:v','libx264','-preset','ultrafast','-crf','23','-c:a','aac','-b:a','192k','-movflags','+faststart','output.mp4']);const data=await ffmpeg.readFile('output.mp4');mp4Url=URL.createObjectURL(new Blob([data.buffer],{type:'video/mp4'}));$('downloadMp4').href=mp4Url;$('downloadMp4').style.display='inline-block';$('exportStatus').textContent='MP4 conversion complete. Download your H.264 MP4. If conversion failed on a phone, use the WebM download or retry with a shorter video.'}catch(e){console.error(e);$('exportStatus').textContent='MP4 conversion failed: '+(e.message||e)+'. This is commonly caused by mobile RAM limits or a browser restriction. Your WebM download remains available.'}finally{btn.disabled=false}};
+</script></body></html>
